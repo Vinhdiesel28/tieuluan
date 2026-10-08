@@ -100,6 +100,19 @@ page('TÓM TẮT')
 paras('Tiểu luận trình bày sự phát triển của trí tuệ nhân tạo và liên hệ các ý tưởng học máy với một hệ thống thực nghiệm có thể chạy lại. Nội dung gồm lịch sử AI, các kỹ thuật machine learning cơ bản, mạng tích chập và mạng hồi tiếp. Trọng tâm thực nghiệm là đối chiếu ba cách cài đặt cùng một cấu trúc: NumPy scratch, TensorFlow/Keras và PyTorch. Cách tổ chức được tham khảo từ tiểu luận của Triệu Tuấn Anh; toàn bộ mô hình, bảng số liệu và checkpoint ở đây được xây dựng và huấn luyện độc lập.||Sáu dataset được sử dụng theo ba chương: CDC Diabetes và giá nhà Việt Nam cho MLP; MNIST và EuroSAT cho CNN; AAPL và Online Retail II cho RNN. Mỗi dataset có nguồn, quy mô gốc, quy mô thực nghiệm, input/output mẫu, phân bố và nhận xét. Chương lịch sử bổ sung ba dataset đại diện nhằm liên hệ sự thay đổi từ dữ liệu bảng sang ảnh và chuỗi thời gian.||Mười tám mô hình trong phép so sánh chính được train từ đầu. Bản scratch có forward, loss, backward và cập nhật SGD; gradient được kiểm tra bằng sai phân hữu hạn và đối chiếu autograd. Các framework dùng cùng initialization, thứ tự batch, cấu trúc, split và tiêu chí validation. Hai bài ML còn có baseline tuyến tính và random forest. Kết quả tương đương giữa framework được giải thích từ điều kiện đối chiếu, không diễn giải thành ba thuật toán có bản chất khác nhau.||Sản phẩm gồm năm notebook đã chạy, mã nguồn, báo cáo, checkpoint, biểu đồ và web Flask có sáu bài toán. Web dùng trọng số thật và phép tính NumPy đã kiểm chứng; không huấn luyện lại tại request. Repository có Blueprint Render. Trạng thái URL live được ghi riêng để phân biệt cấu hình triển khai với dịch vụ đã được kiểm tra online.')
 
 page('MỞ ĐẦU - 0.1. Bối cảnh và lý do chọn đề tài')
+
+# Public deliverables at the beginning of the introduction.
+intro_links = [
+    ('Tên website', 'IntelliLab - Tiểu luận môn học', None),
+    ('Website dự đoán', 'https://tieuluan-vinh-intellilab.onrender.com', 'https://tieuluan-vinh-intellilab.onrender.com'),
+    ('GitHub notebook', 'https://github.com/Vinhdiesel28/tieuluan/tree/main/notebooks', 'https://github.com/Vinhdiesel28/tieuluan/tree/main/notebooks'),
+]
+for label, text, url in intro_links:
+    rendered = escape(text) if url is None else '<link href="'+escape(url)+'" color="#155b8f">'+escape(text)+'</link>'
+    story.append(Paragraph('<b>'+escape(label)+':</b> '+rendered, ParagraphStyle('intro_link_'+label, parent=normal, fontSize=10.5, leading=14, spaceAfter=5)))
+    markdown.append('**'+label+':** '+(text if url is None else '['+text+']('+url+')')+'\n')
+story.append(Spacer(1, 9))
+
 paras('Trí tuệ nhân tạo được sử dụng trong nhiều hệ thống xử lý thông tin, nhưng việc dùng một thư viện để gọi fit và predict chưa đủ để hiểu mô hình hoạt động như thế nào. Một kết quả trên màn hình có thể bị chi phối bởi cách chia dữ liệu, biến đầu vào, đơn vị target, độ lệch lớp hoặc việc dùng nhầm thông tin tương lai. Vì vậy, phát triển hệ thống thông minh cần kết hợp kiến thức thuật toán với quy trình dữ liệu và kiểm chứng phần mềm.||Các kỹ thuật trong học phần cung cấp những giả định khác nhau về cấu trúc dữ liệu. MLP nhận vector đặc trưng; CNN khai thác quan hệ cục bộ trên ảnh; RNN cập nhật trạng thái theo chuỗi. Chúng đều là những hàm có tham số được tối ưu từ dữ liệu, nhưng cách chia sẻ trọng số và truyền thông tin khác nhau. Hiểu sự khác biệt này giúp lựa chọn mô hình có căn cứ thay vì chỉ tăng số lớp hoặc thay tên kiến trúc.||Đề tài được chọn để nối ba mức mô tả: công thức toán học, chương trình huấn luyện và ứng dụng sử dụng checkpoint. Cài đặt scratch buộc người học xác định rõ tensor shape, đạo hàm và quy tắc cập nhật. Cài đặt bằng Keras/PyTorch giúp kiểm tra công thức và tổ chức thí nghiệm thuận tiện. Web cung cấp đầu vào cụ thể, phát hiện lỗi và đưa kết quả ra ngữ cảnh sử dụng.||Bài mẫu cung cấp một cấu trúc tham khảo hữu ích, nhưng các nhận xét phải dựa trên lần chạy riêng. Tiểu luận giữ tinh thần so sánh có kiểm soát, không sao chép số đo hoặc coi kết quả tốt nhất trên một lần chia tập là kết luận phổ quát. Những giới hạn về CPU, dữ liệu và cấu hình được ghi cùng bảng kết quả để người đọc đánh giá đúng phạm vi.')
 table(['Mức nghiên cứu','Câu hỏi đặt ra'],[['Lý thuyết','Hàm nào được học và kiến trúc đưa vào giả định gì?'],['Thực nghiệm','Dữ liệu nào được dùng để fit, chọn và đánh giá?'],['Triển khai','Input mới có được xử lý giống lúc train không?']],[125,355])
 
@@ -425,5 +438,22 @@ for iteration in range(3):
     Report(str(OUT/'Tieu_luan_Nguyen_Minh_Vinh.pdf'),pagesize=(595.28,841.89),leftMargin=56,rightMargin=56,topMargin=46,bottomMargin=45).build(copy.deepcopy(story[:tocpos]+toc+story[tocpos+1:]),onFirstPage=footer,onLaterPages=footer)
 (OUT/'Tieu_luan_Nguyen_Minh_Vinh.md').write_text('\n'.join(markdown),encoding='utf-8')
 (ROOT/'results/report_outline.json').write_text(json.dumps(outline,ensure_ascii=False,indent=2),encoding='utf-8')
+# Use the student's supplied cover unchanged as page 1.
+from pypdf import PdfReader, PdfWriter
+pdf_path = OUT/'Tieu_luan_Nguyen_Minh_Vinh.pdf'
+cover_path = OUT/'assets/cover.pdf'
+if cover_path.exists():
+    generated = PdfReader(pdf_path)
+    cover = PdfReader(cover_path)
+    assert len(cover.pages) == 1
+    writer = PdfWriter()
+    writer.add_page(cover.pages[0])
+    for pdf_page in generated.pages[1:]:
+        writer.add_page(pdf_page)
+    temp_pdf = OUT/'report_assembled.pdf'
+    with temp_pdf.open('wb') as stream:
+        writer.write(stream)
+    temp_pdf.replace(pdf_path)
+
 print('Report written')
 

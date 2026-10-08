@@ -38,6 +38,12 @@ Sản phẩm gồm năm notebook đã chạy, mã nguồn, báo cáo, checkpoint
 
 # MỞ ĐẦU - 0.1. Bối cảnh và lý do chọn đề tài
 
+**Tên website:** IntelliLab - Tiểu luận môn học
+
+**Website dự đoán:** [https://tieuluan-vinh-intellilab.onrender.com](https://tieuluan-vinh-intellilab.onrender.com)
+
+**GitHub notebook:** [https://github.com/Vinhdiesel28/tieuluan/tree/main/notebooks](https://github.com/Vinhdiesel28/tieuluan/tree/main/notebooks)
+
 Trí tuệ nhân tạo được sử dụng trong nhiều hệ thống xử lý thông tin, nhưng việc dùng một thư viện để gọi fit và predict chưa đủ để hiểu mô hình hoạt động như thế nào. Một kết quả trên màn hình có thể bị chi phối bởi cách chia dữ liệu, biến đầu vào, đơn vị target, độ lệch lớp hoặc việc dùng nhầm thông tin tương lai. Vì vậy, phát triển hệ thống thông minh cần kết hợp kiến thức thuật toán với quy trình dữ liệu và kiểm chứng phần mềm.
 
 Các kỹ thuật trong học phần cung cấp những giả định khác nhau về cấu trúc dữ liệu. MLP nhận vector đặc trưng; CNN khai thác quan hệ cục bộ trên ảnh; RNN cập nhật trạng thái theo chuỗi. Chúng đều là những hàm có tham số được tối ưu từ dữ liệu, nhưng cách chia sẻ trọng số và truyền thông tin khác nhau. Hiểu sự khác biệt này giúp lựa chọn mô hình có căn cứ thay vì chỉ tăng số lớp hoặc thay tên kiến trúc.
@@ -1026,7 +1032,7 @@ Kiểm thử metric tính lại từ dự đoán đã lưu vàso với JSON củ
 
 Cấu hình Render có build commandcài requirements- web.txt, start Gunicorn vàhealthendpointtrả số lượng 18 model. Có file cấu hình không tự đồng nghĩa đã có URLonline. Trạng thái thực tế phải được xác nhận từ dịch vụ bên ngoài, tách biệt với việc API chạy đúng trong test clienthoặcmáy cá nhân.
 
-Trạng thái tại lúc xuất báo cáo: đã chuẩn bị Blueprint và kiểm tra local; chưa xác nhận URL Render live vì cần phiên đăng nhập tài khoản.
+Trạng thái tại lúc xuất báo cáo: đã kiểm tra live tại https://tieuluan-vinh-intellilab.onrender.com
 
 Các bước tái lập nằm trong README và docs/DEPLOY.md. Raw data được lấy từ nguồn công khai hoặc tệp đã cung cấp, đối chiếu SHA-256 trong manifest. Các bảng kết quả trong báo cáo được đọc trực tiếp từ tệp do notebook tạo, không nhập tay một bảng kết quả của tác giả khác.
 
