@@ -1,0 +1,24 @@
+{
+  "pages": 58,
+  "introduction": [
+    5,
+    8
+  ],
+  "history": [
+    9,
+    16
+  ],
+  "ml": [
+    17,
+    28
+  ],
+  "cnn": [
+    29,
+    40
+  ],
+  "rnn": [
+    41,
+    52
+  ],
+  "all_pages_rendered": true
+}
