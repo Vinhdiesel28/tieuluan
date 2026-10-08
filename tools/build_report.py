@@ -441,7 +441,7 @@ for iteration in range(3):
 # Use the student's supplied cover unchanged as page 1.
 from pypdf import PdfReader, PdfWriter
 pdf_path = OUT/'Tieu_luan_Nguyen_Minh_Vinh.pdf'
-cover_path = OUT/'assets/cover.pdf'
+cover_path = OUT/'assets/cover_adjusted.pdf'
 if cover_path.exists():
     generated = PdfReader(pdf_path)
     cover = PdfReader(cover_path)
