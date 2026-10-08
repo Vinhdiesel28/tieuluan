@@ -1,6 +1,10 @@
 {
   "provider": "Render",
-  "live_verified": false,
-  "url": null,
-  "status": "User will deploy; Blueprint prepared and local application tested"
+  "live_verified": true,
+  "url": "https://tieuluan-vinh-intellilab.onrender.com",
+  "status": "Live; health and all 18 prediction routes verified",
+  "verified_date": "2026-10-08",
+  "service_id": "srv-db3ol7cs728c73flijbg",
+  "deployed_commit": "322bfbd7b4f919c3cb58280f73d8ef53674bfac4",
+  "plan": "free"
 }

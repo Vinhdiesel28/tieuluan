@@ -1,5 +1,7 @@
 # Deploy Render
 
+Web live: https://tieuluan-vinh-intellilab.onrender.com (Free). Đã kiểm tra 18 tuyến dự đoán ngày 08/10/2026.
+
 1. Đăng nhập https://dashboard.render.com/.
 2. New → Blueprint → chọn https://github.com/Vinhdiesel28/tieuluan, branch main.
 3. Đọc `render.yaml`, kiểm tra service `tieuluan-vinh-intellilab`, plan **Free**.

@@ -1,0 +1,100 @@
+{
+  "url": "https://tieuluan-vinh-intellilab.onrender.com",
+  "health": {
+    "models": 18,
+    "status": "ok"
+  },
+  "predictions": [
+    {
+      "dataset": "diabetes",
+      "framework": "scratch",
+      "prediction": "Prediabetes or diabetes"
+    },
+    {
+      "dataset": "diabetes",
+      "framework": "keras",
+      "prediction": "Prediabetes or diabetes"
+    },
+    {
+      "dataset": "diabetes",
+      "framework": "pytorch",
+      "prediction": "Prediabetes or diabetes"
+    },
+    {
+      "dataset": "housing",
+      "framework": "scratch",
+      "prediction": 7.62312408490181
+    },
+    {
+      "dataset": "housing",
+      "framework": "keras",
+      "prediction": 7.623125744148478
+    },
+    {
+      "dataset": "housing",
+      "framework": "pytorch",
+      "prediction": 7.623126112870004
+    },
+    {
+      "dataset": "mnist",
+      "framework": "scratch",
+      "prediction": "2"
+    },
+    {
+      "dataset": "mnist",
+      "framework": "keras",
+      "prediction": "2"
+    },
+    {
+      "dataset": "mnist",
+      "framework": "pytorch",
+      "prediction": "2"
+    },
+    {
+      "dataset": "eurosat",
+      "framework": "scratch",
+      "prediction": "River"
+    },
+    {
+      "dataset": "eurosat",
+      "framework": "keras",
+      "prediction": "River"
+    },
+    {
+      "dataset": "eurosat",
+      "framework": "pytorch",
+      "prediction": "River"
+    },
+    {
+      "dataset": "stock",
+      "framework": "scratch",
+      "prediction": 192.46411815136588
+    },
+    {
+      "dataset": "stock",
+      "framework": "keras",
+      "prediction": 192.46411818498132
+    },
+    {
+      "dataset": "stock",
+      "framework": "pytorch",
+      "prediction": 192.46411821859678
+    },
+    {
+      "dataset": "customer",
+      "framework": "scratch",
+      "prediction": "No purchase"
+    },
+    {
+      "dataset": "customer",
+      "framework": "keras",
+      "prediction": "No purchase"
+    },
+    {
+      "dataset": "customer",
+      "framework": "pytorch",
+      "prediction": "No purchase"
+    }
+  ],
+  "status": "passed"
+}

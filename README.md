@@ -68,4 +68,4 @@ Tạo lại PDF trên Windows: `python tools/build_report.py` (dùng Times New R
 
 `results/verification.json` ghi kiểm tra checkpoint, tính lại metric, output notebook và API; `results/gradient_checks.json` ghi kiểm tra sai phân hữu hạn và autograd. Không tạo số liệu giả khi thí nghiệm chưa chạy.
 
-[Hướng dẫn Render](docs/DEPLOY.md) · [Blueprint](render.yaml). **Chưa xác minh URL live**: người dùng chọn tự triển khai Render; trạng thái trong `docs/deployment_status.json`. Cấu hình triển khai và web local đã được chuẩn bị. Sau đăng nhập, chọn New Blueprint, kết nối repository này và áp dụng `render.yaml`.
+[Web đang chạy trên Render](https://tieuluan-vinh-intellilab.onrender.com) · [Hướng dẫn Render](docs/DEPLOY.md) · [Blueprint](render.yaml). Đã deploy gói Free và xác minh `/health` cùng 18 tuyến dự đoán trên sáu dataset ngày 08/10/2026. Kết quả kiểm tra: `results/render_verification.json`; trạng thái: `docs/deployment_status.json`. Dịch vụ Free có thể khởi động chậm sau thời gian không sử dụng.
