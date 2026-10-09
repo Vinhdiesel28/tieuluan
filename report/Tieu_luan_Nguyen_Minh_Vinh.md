@@ -31,9 +31,9 @@ Tiểu luận trình bày sự phát triển của trí tuệ nhân tạo và li
 
 Sáu dataset được sử dụng theo ba chương: CDC Diabetes và giá nhà Việt Nam cho MLP; MNIST và EuroSAT cho CNN; AAPL và Online Retail II cho RNN. Mỗi dataset có nguồn, quy mô gốc, quy mô thực nghiệm, input / output mẫu, phân bố và nhận xét. Chương lịch sử bổ sung ba dataset đại diện nhằm liên hệ sự thay đổi từ dữ liệu bảng sang ảnh và chuỗi thời gian.
 
-Mười tám mô hình trong phép so sánh chính được train từ đầu. Bản scratch có forward, loss, backward và cập nhật SGD; gradient được kiểm tra bằng sai phân hữu hạn và đối chiếu autograd. Các framework dùng cùng initialization, thứ tự batch, cấu trúc, split và tiêu chí validation. Hai bài ML còn có baseline tuyến tính và random forest. Kết quả tương đương giữa framework được giải thích từ điều kiện đối chiếu, không diễn giải thành ba thuật toán có bản chất khác nhau.
+Mười tám checkpoint đối chiếu thư viện, 16 checkpoint so sánh kiến trúc CNN / RNN và bốn mô hình ML cổ điển đã được huấn luyện. Phần so sánh kiến trúc tham khảo cách tổ chức bài Phạm Văn Tư, giữ dataset của bài này. Bản scratch có forward, loss, backward và cập nhật SGD; gradient được kiểm tra bằng sai phân hữu hạn và đối chiếu autograd. Các framework dùng cùng initialization, thứ tự batch, cấu trúc, split và tiêu chí validation. Hai bài ML còn có baseline tuyến tính và random forest. Kết quả tương đương giữa framework được giải thích từ điều kiện đối chiếu, không diễn giải thành ba thuật toán có bản chất khác nhau.
 
-Sản phẩm gồm năm notebook đã chạy, mã nguồn, báo cáo, checkpoint, biểu đồ và web Flask có sáu bài toán. Web dùng trọng số thật và phép tính NumPy đã kiểm chứng; không huấn luyện lại tại request. Repository có Blueprint Render. Trạng thái URL live được ghi riêng để phân biệt cấu hình triển khai với dịch vụ đã được kiểm tra online.
+Sản phẩm gồm sáu notebook đã chạy, mã nguồn, báo cáo, checkpoint, biểu đồ và web Flask có sáu bài toán. Web dùng trọng số thật và phép tính NumPy đã kiểm chứng; không huấn luyện lại tại request. Repository có Blueprint Render. Trạng thái URL live được ghi riêng để phân biệt cấu hình triển khai với dịch vụ đã được kiểm tra online.
 
 
 # MỞ ĐẦU - 0.1. Bối cảnh và lý do chọn đề tài
@@ -92,7 +92,7 @@ Mục tiêu cuối là đóng gói mô hình thành ứng dụng có thể tri�
 
 Quy mô benchmark được cố định trước train. CDC và ảnh được lấy tập con có kiểm soát để cài đặt scratch có thể chạy trên CPU. MNIST giữ ranh giới test chính thức. Dữ liệu tuần tự được chia theo thời điểm nhãn. Giá nhà được chia theo nhóm địa chỉ; đây là biện pháp giảm trùng tin rao giữa các tập, chưa thay thế một đánh giá theo địa lý hoặc thời gian.
 
-Phép so sánh chính sử dụng một seed, một kiến trúc nhỏ cho mỗi nhóm, không pre train ed và không tìm kiếm siêu tham số. LSTM, GRU, attention và một số thuật toán ML khác được giải thích trong lý thuyết nhưng không được cộng vào số mô hình đã huấn luyện của tiểu luận. Các bài A 3-A 6 trước đây hỗ trợ nguồn dữ liệu và kinh nghiệm triển khai; kết quả ở đây được tạo mới theo hợp đồng so sánh thống nhất.
+Thực nghiệm sử dụng một seed, không pre train ed và không tìm kiếm siêu tham số. Bên cạnh đối chiếu ba thư viện, chương CNN có bốn kiến trúc và chương RNN có Simple RNN, LSTM, GRU, BiLSTM. Attention chỉ được giới thiệu lý thuyết. Các bài A 3-A 6 trước đây hỗ trợ nguồn dữ liệu và kinh nghiệm triển khai; kết quả ở đây được tạo mới theo hợp đồng so sánh thống nhất.
 
 
 # 0.4. Phương pháp và tổ chức tiểu luận
@@ -426,10 +426,11 @@ Với seed 42 và phép cập nhật gần như tương đương, ba metric có 
 
 Chọn trên validation bằng Macro-F1: scratch. Baseline đơn giản trên test: Accuracy =0.8262, Macro-F1 =0.4524.
 
-| Baseline | Accuracy | Macro-F1 | F1 | AP |
+| Mô hình | Accuracy | Macro-F1 | F1 | AP |
 | --- | --- | --- | --- | --- |
 | LogisticRegression | 0.7146 | 0.6403 | 0.4767 | 0.4362 |
 | RandomForest | 0.7890 | 0.6731 | 0.4785 | 0.4497 |
+| MLP | 0.7056 | 0.6338 | 0.4716 | 0.4432 |
 
 Accuracy và F1 được đọc cùng nhau vì lớp dương ít hơn. Class weighting tăng mức phạt lớp dương, có thể tăng Recall nhưng làm Precision giảm. Vì vậy, không chọn winner bằng Accuracy duy nhất hoặc đổi threshold sau khi xem test. Tiểu luận dùng argmax hai logits, tương đương ngưỡng 0,5 của softmax lớp dương.
 
@@ -446,10 +447,11 @@ Baseline LogisticRegression và RandomForest có cơ chế biểu diễn khác M
 
 Chọn trên validation bằng RMSE: keras. Baseline đơn giản trên test: RMSE=2.2138, MAE=1.8356, R²=-0.0028.
 
-| Baseline | RMSE | MAE | R² |
+| Mô hình | RMSE | MAE | R² |
 | --- | --- | --- | --- |
 | Ridge | 1.9465 | 1.5550 | 0.2247 |
 | RandomForest | 1.8542 | 1.4719 | 0.2965 |
+| MLP | 1.8760 | 1.4980 | 0.2799 |
 
 RMSE nhạy với sai số lớn còn MAE thể hiện lỗi tuyệt đối trung bình. R² được tính trong đơn vị giá gốc, không phải trên target chuẩn hóa. Cần so với baseline dự đoán mean train và hai mô hình cổ điển. Một MLP trên sáu cột số chưa nắm được vị trí, tình trạng pháp lý và nhiều yếu tố của bất động sản.
 
@@ -725,13 +727,68 @@ MNIST có thể mất thông tin nét sau resize và gặp các chữ số có h
 Các ví dụ lỗi được chọn sau khi cố định model. Không sửa kiến trúc để giảm lỗi trên chính những mẫu này rồi tiếp tục gọi chúng là test. Nếu muốn nghiên cứu sâu hơn, cần tách một bộ phân tích lỗi khỏi bộ đánh giá cuối hoặc dùng một test mới.
 
 
-# 3.12. Tiểu kết CNN và hướng mở rộng
+# 3.12. So sánh các kiến trúc khác nhau
+
+Phần bổ sung theo hướng bài mẫu Phạm Văn Tư so sánh CNN cơ bản, VGG-style, MobileNet-style và ResNet-style. Đây là bốn kiến trúc khác nhau được train độc lập bằng PyTorch, tách khỏi phép kiểm tra ba thư viện ở các phần trước. Dữ liệu, split, chuẩn hóa và ảnh 16 × 16 được giữ nguyên; không lấy kết quả hoặc trọng số của bài mẫu.
+
+| Kiến trúc | Cấu trúc và khác biệt |
+| --- | --- |
+| CNN cơ bản | Conv 3 × 3, 8 kênh → ReLU → AvgPool → Dense |
+| VGG-style | Bốn Conv 3 × 3, kênh 16/32, hai lần pooling, Dense 64 |
+| MobileNet-style | Mở rộng 1 × 1 → depthwise 3 × 3 → chiếu tuyến tính 1 × 1; một skip connection |
+| ResNet-style | Stem 16 kênh, hai residual block 16/32 kênh, global average pooling |
+
+VGG dùng chuỗi kernel nhỏ để tăng độ sâu [18]. MobileNetV 2 dùng inverted residual và linear bottleneck [19]; bản nhỏ ở đây dùng ReLU, không BatchNorm, nên chỉ gọi MobileNet-style. ResNet học nhánh F(x) cộng với đường tắt x [20]; bản hai block này không phải ResNet-18 đầy đủ. Cả bốn đều khởi tạo ngẫu nhiên, không dùng pre train ed.
+
+```python
+# Residual block
+residual = x
+x = torch.relu(conv1(x))
+x = conv2(x) + residual
+x = torch.relu(x)
+# Depthwise: mỗi kênh có kernel riêng
+depth = nn.Conv2d(32, 32, 3, padding=1, groups=32)
+```
+
+Cùng seed 42, Adam learning rate 0,001, batch 128, 20 epoch và gradient clipping 1. Checkpoint lấy validation loss thấp nhất; kiến trúc mặc định chọn bằng validation Macro- F1 hoặc RMSE. Test chỉ dùng báo cáo sau khi cố định cấu hình. Không so trực tiếp mức tăng với nhóm SGD cũ để kết luận riêng tác dụng của kiến trúc, vì optimizer khác nhau. Toàn bộ code và learning curve nằm trong notebook 06.
+
+
+# 3.13. Kết quả so sánh kiến trúc trên hai dataset
+
+Dataset: MNIST
+
+| Mô hình | Accuracy | Macro-F1 | Tham số |
+| --- | --- | --- | --- |
+| basic_cnn | 0.9580 | 0.9578 | 4010 |
+| vgg_style | 0.9775 | 0.9773 | 49850 |
+| mobilenet_style | 0.8770 | 0.8754 | 4274 |
+| resnet_style | 0.9570 | 0.9567 | 24170 |
+
+Chọn từ validation: vgg_style. Test Macro-F1 = 0.9773.
+
+Dataset: EuroSAT
+
+| Mô hình | Accuracy | Macro-F1 | Tham số |
+| --- | --- | --- | --- |
+| basic_cnn | 0.6270 | 0.6195 | 4154 |
+| vgg_style | 0.7065 | 0.7000 | 50138 |
+| mobilenet_style | 0.6395 | 0.6273 | 4562 |
+| resnet_style | 0.6915 | 0.6800 | 24458 |
+
+Chọn từ validation: vgg_style. Test Macro-F1 = 0.7000.
+
+Các kiến trúc cùng dùng một tập chia nhưng khác số tham số và thời gian huấn luyện; chi phí chi tiết được lưu trong CSV /notebook. Đây là so sánh cùng ngân sách epoch, không phải cùng FLOPs. Kết quả một seed chưa đủ kết luận ưu thế thống kê. Mô hình phức tạp hơn không mặc định tốt hơn trên mọi bộ dữ liệu.
+
+![So sánh test trên dataset thứ hai; mô hình được chọn bằng validation.](../results/architectures/eurosat/comparison.png)
+
+
+# 3.14. Tiểu kết CNN và hướng mở rộng
 
 Chương 3 đã triển khai trọn vẹn một CNN nhỏ bằng NumPy scratch, Keras và PyTorch, huấn luyện trên hai tập ảnh có khác biệt về cấu trúc. Bản scratch có backward qua head, average pooling, ReLU và convolution kernel. Sai phân hữu hạn và gradient autograd xác nhận các phép biến đổi này trên mini- batch kiểm tra.
 
 So sánh cùng kiến trúc giúp tách câu hỏi “ code có nhất quán không” khỏi câu hỏi “kiến trúc có đủ tốt không”. Khi giữ mọi điều kiện tương ứng, ba đường học và metric thường rất gần. Chất lượng thực tế còn chịu ảnh hưởng của độ phân giải, lượng dữ liệu, cấu trúc mạng và đặc trưng của nhãn.
 
-Các hướng mở rộng như thêm convolution, augmentation, batch normalization hoặc transfer learning có thể được nghiên cứu ở protocol riêng. Nếu thêm chỉ cho một implementation thì không còn là phép đối chiếu framework hiện tại. Cần ghi lại cả chi phí và metric, thay vì tăng kiến trúc rồi chỉ báo cáo một chỉ số tốt nhất.
+Phần bổ sung đã thử các kiến trúc convolution sâu hơn, depthwise và residual trong protocol Adam riêng. Augmentation, batch normalization và transfer learning vẫn chưa được thử. Nếu thêm chỉ cho một implementation thì không còn là phép đối chiếu framework hiện tại. Cần ghi lại cả chi phí và metric, thay vì tăng kiến trúc rồi chỉ báo cáo một chỉ số tốt nhất.
 
 Web phục vụ đúng model 16 × 16 của bài, có hiển thị mẫu input để người đọc thấy phạm vi. Ảnh người dùng khác domain, bị xoay mạnh hoặc chứa nhiều đối tượng không được bảo đảm phù hợp. Mô hình EuroSAT không phân đoạn vị trí trên ảnh; nó chỉ gán một trong mười lớp cho toàn ảnh đầu vào.
 
@@ -751,7 +808,7 @@ Trong mô hình many-to-one của bài, chỉ trạng thái cuối được đư
 
 RNN không tự bảo đảm hiểu quan hệ thời gian. Nếu input có ngày đích, hoặc scaler fit cả tương lai, model có thể nhận thông tin không tồn tại ở lúc dự đoán. Vì vậy, việc xác định thời điểm nhãn có thể biết và các bước lịch sử được phép dùng quan trọng hơn chỉ lựa chọn một recurrent layer.
 
-Tiểu luận chọn Vanilla RNN để bản scratch BPTT có thể đọc đầy đủ và đối chiếu trực tiếp. Những cải tiến như LSTM/GRU được trình bày ở lý thuyết, nhưng không cộng vào 18 mô hình chính đã train. Các kết quả RNN A 06 trước đó không được thay vào bảng hiện tại vì optimizer và protocol đối chiếu đã thay đổi.
+Tiểu luận chọn Vanilla RNN để bản scratch BPTT có thể đọc đầy đủ và đối chiếu trực tiếp. Phần bổ sung so sánh Simple RNN, LSTM, GRU và BiLSTM bằng PyTorch; tám checkpoint này được báo cáo riêng ở mục 4.12–4.13. Các kết quả RNN A 06 trước đó không được thay vào bảng hiện tại vì optimizer và protocol đối chiếu đã thay đổi.
 
 | Dataset | Nguồn gốc | Train / Val / Test | Input |
 | --- | --- | --- | --- |
@@ -809,15 +866,15 @@ LSTM bổ sung cell state và các cổng input, forget, output. Cell được c
 
 GRU kết hợp reset và update gate, không có cell state riêng. Các thư viện có biến thể reset-before hoặc reset-after; việc chuyển trọng số cần thống nhất công thức và thứ tự gate. Bi RNN /BiLSTM đọc hai chiều của một cửa sổ; nếu cửa sổ hoàn toàn là quá khứ thì đọc ngược không tự tạo leakage, nhưng đưa thời điểm đích vào cửa sổ vẫn là sai.
 
-Attention cho phép truy cập các vị trí khác qua trọng số phụ thuộc nội dung thay vì chỉ qua trạng thái cuối. Tuy nhiên, nghiên cứu thêm kiến trúc này cần một hợp đồng so sánh khác về số tham số, compute và dữ liệu. Tiểu luận chỉ trình bày để đặt Vanilla RNN vào bối cảnh phát triển, không ghi nhận đã train LSTM/GRU/Transformer trong bảng của chương này.
+Attention cho phép truy cập các vị trí khác qua trọng số phụ thuộc nội dung thay vì chỉ qua trạng thái cuối. Tuy nhiên, nghiên cứu thêm kiến trúc này cần một hợp đồng so sánh khác về số tham số, compute và dữ liệu. Tiểu luận đã train LSTM, GRU và BiLSTM trong nhóm so sánh kiến trúc ở mục 4.12–4.13; attention và Transformer vẫn chỉ là bối cảnh lý thuyết.
 
 Một mô hình đơn giản nhưng có protocol rõ tạo điểm khởi đầu có thể kiểm tra. Khi baseline quá mạnh hoặc predictor ít thông tin, tăng độ phức tạp chưa chắc đem lại cải thiện. Các thí nghiệm sau cần chứng minh lợi ích trên dữ liệu ngoài mẫu thay vì dựa vào trực giác rằng nhiều gate sẽ luôn tốt hơn.
 
 | Kiến trúc | Trạng thái | Vai trò trong tiểu luận |
 | --- | --- | --- |
 | Vanilla RNN | Hidden tanh | Train bằng cả ba cách |
-| LSTM | Hidden + cell + gates | Lý thuyết mở rộng |
-| GRU | Hidden + reset/update | Lý thuyết mở rộng |
+| LSTM / BiLSTM | Hidden + cell + gates | Đã train bằng PyTorch |
+| GRU | Hidden + reset/update | Đã train bằng PyTorch |
 | Attention | Kết hợp vị trí có trọng số | Bối cảnh lịch sử |
 
 
@@ -964,7 +1021,62 @@ Thị trường và hành vi khách hàng có thể thay đổi theo thời gian
 Input khách hàng gồm các tổng tuần, không chứa các chiến dịch, mùa khuyến mại hoặc thông tin cá nhân bổ sung. AAPL chỉ có OHLCV, không có tin tức. Vì vậy không quy lỗi một mẫu cụ thể cho một sự kiện không quan sát được trong dataset. Những suy luận nguyên nhân cần nguồn dữ liệu khác và phương pháp kiểm định phù hợp.
 
 
-# 4.12. Tiểu kết RNN
+# 4.12. So sánh các kiến trúc khác nhau
+
+Bốn kiến trúc được so sánh là Simple RNN, LSTM, GRU và BiLSTM. Dữ liệu vẫn là AAPL và Online Retail II, khác với cổ phiếu Việt Nam và bộ khách hàng mô phỏng trong bài Tư. Mỗi mô hình có một tầng hồi tiếp, hidden size 32; BiLSTM có 32 trạng thái mỗi chiều nên nhiều tham số hơn. Head trả log-return hoặc hai logits mua hàng.
+
+| Kiến trúc | Cơ chế |
+| --- | --- |
+| Simple RNN | h mới = tanh(Wx + Uh + b) |
+| LSTM | Ba cổng input /forget/ output, trạng thái cell và hidden |
+| GRU | Cổng reset/update, một trạng thái hidden |
+| BiLSTM | Hai LSTM đọc xuôi/ngược trong cửa sổ lịch sử; nối hai hidden cuối |
+
+BiLSTM chỉ đọc hai chiều bên trong 30 phiên hoặc 8 tuần đã quan sát trước thời điểm dự báo. Nó không được đọc phiên/tuần chứa nhãn. Vì vậy hai chiều không tự tạo leakage trong bài many-to-one này. Dùng h_n của cả hai chiều, không lấy output tại bước cuối một cách thiếu chiều ngược.
+
+```python
+layer = nn.LSTM(input_size=D, hidden_size=32,
+                batch_first=True, bidirectional=True)
+_, (h, cell) = layer(x)
+features = torch.cat((h[-2], h[-1]), dim=1)
+logits = head(features)
+```
+
+Cùng seed 42, Adam learning rate 0,001, batch 128, 20 epoch và gradient clipping 1. Checkpoint lấy validation loss thấp nhất; kiến trúc mặc định chọn bằng validation Macro- F1 hoặc RMSE. Test chỉ dùng báo cáo sau khi cố định cấu hình. Không so trực tiếp mức tăng với nhóm SGD cũ để kết luận riêng tác dụng của kiến trúc, vì optimizer khác nhau. Toàn bộ code và learning curve nằm trong notebook 06.
+
+
+# 4.13. Kết quả so sánh kiến trúc trên hai dataset
+
+Dataset: AAPL (USD)
+
+| Mô hình | RMSE | MAE | R² | Tham số |
+| --- | --- | --- | --- | --- |
+| simple_rnn | 3.9641 | 2.6790 | 0.9702 | 1377 |
+| lstm | 3.8946 | 2.6562 | 0.9712 | 5409 |
+| gru | 3.9381 | 2.6764 | 0.9706 | 4065 |
+| bilstm | 3.9250 | 2.6446 | 0.9708 | 10817 |
+
+Chọn từ validation: lstm. Test RMSE = 3.8946.
+
+Baseline giữ giá phiên trước có RMSE 3.9046 USD. Mô hình chọn trên validation có RMSE thấp hơn baseline; R² cao không thay thế đối chiếu này.
+
+Dataset: Online Retail II
+
+| Mô hình | Accuracy | Macro-F1 | Tham số |
+| --- | --- | --- | --- |
+| simple_rnn | 0.7229 | 0.5863 | 1346 |
+| lstm | 0.7493 | 0.6052 | 5186 |
+| gru | 0.7465 | 0.6029 | 3906 |
+| bilstm | 0.7569 | 0.6107 | 10370 |
+
+Chọn từ validation: bilstm. Test Macro-F1 = 0.6107.
+
+Các kiến trúc cùng dùng một tập chia nhưng khác số tham số và thời gian huấn luyện; chi phí chi tiết được lưu trong CSV /notebook. Đây là so sánh cùng ngân sách epoch, không phải cùng FLOPs. Kết quả một seed chưa đủ kết luận ưu thế thống kê. Mô hình phức tạp hơn không mặc định tốt hơn trên mọi bộ dữ liệu.
+
+![So sánh test trên dataset thứ hai; mô hình được chọn bằng validation.](../results/architectures/customer/comparison.png)
+
+
+# 4.14. Tiểu kết RNN
 
 Chương 4 đã xây dựng một Vanilla RNN many-to-one và triển khai BPTT bằng NumPy. Hai framework thực hiện cùng recurrence và cùng quy tắc tối ưu. Hai dataset bao phủ regression giá phiên kế tiếp và classification mua tuần kế tiếp, với target được định nghĩa theo thời điểm rõ ràng.
 
@@ -972,7 +1084,7 @@ Chương 4 đã xây dựng một Vanilla RNN many-to-one và triển khai BPTT 
 
 Baseline và phân tích lỗi giúp tránh diễn giải quá mức metric. Ba framework tạo kết quả gần nhau chứng tỏ tính nhất quán của phép triển khai dưới điều kiện hiện tại; nó không giải quyết giới hạn thông tin trong lịch sử. Một mạng có gate hoặc một bộ dữ liệu lớn hơn chỉ có ý nghĩa nếu được kiểm tra bằng protocol phù hợp.
 
-Hướng phát triển tiếp theo gồm nhiều seed, walk- forward validation, phân tích drift, calibration score và đối chiếu với mô hình chuỗi đơn giản. Tất cả là công việc chưa thực hiện, được tách rõ khỏi kết quả của 18 model đã train trongtiểu luận. Checkpoint hiện tại được sử dụng nguyên vẹn trong web để người dùng thử cùng phạm vi input.
+Hướng phát triển tiếp theo gồm nhiều seed, walk- forward validation, phân tích drift, calibration score và đối chiếu với mô hình chuỗi đơn giản. Tất cả là công việc chưa thực hiện, được tách rõ khỏi các kết quả đã train trong tiểu luận. Checkpoint hiện tại được sử dụng nguyên vẹn trong web để người dùng thử cùng phạm vi input.
 
 | Quy tắc | Cách áp dụng |
 | --- | --- |
@@ -984,7 +1096,7 @@ Hướng phát triển tiếp theo gồm nhiều seed, walk- forward validation,
 
 # 5. TRIỂN KHAI - 5.1. Kiến trúc ứng dụng
 
-Ứng dụng Flask cung cấp sáu bài toán trong một giao diện: CDC, giá nhà, MNIST, EuroSAT, AAPL và mua lại. Mỗi bài toán có ba lựa chọn implementation đã train. Các model không được huấn luyện lại khi có request; server chỉ đọc bundle và tính forward. Mẫu test lịch sử được gắn nhãn thật riêng để người dùng đối chiếu.
+Ứng dụng Flask cung cấp sáu bài toán trong một giao diện: CDC, giá nhà, MNIST, EuroSAT, AAPL và mua lại. Mỗi bài toán có lựa chọn kiến trúc đã train và nhóm đối chiếu ba thư viện. ML bổ sung Logistic Regression/ Ridge và Random Forest; CNN / RNN bổ sung bốn kiến trúc mỗi nhóm. Các model không được huấn luyện lại khi có request; server chỉ đọc bundle và tính forward. Mẫu test lịch sử được gắn nhãn thật riêng để người dùng đối chiếu.
 
 Luồng xử lý gồm chọn dataset / framework, xác thực input, tiền xử lý theo thống kê train, chạy NumPy forward, khôi phục đơn vị hoặc softmax, rồi trả JSON. Trọng số của Keras / PyTorch được export sang cùng định dạng; checkpoint native vẫn được lưu để kiểm tra lại. Đây là phục vụ trọng số thật, không phải train một model mô phỏng thay thế.
 
@@ -1023,14 +1135,14 @@ Score softmax chưa được calibration; giá trị cao không bảo đảm d�
 | Kiểm tra | Kết quả |
 | --- | --- |
 | Gradient scratch | MLP, CNN, RNN: finite differences và autograd |
-| Model native /portable | 18 checkpoint được xác minh |
-| API hợp lệ | 162 yêu cầu thành công |
-| API lỗi | 6 trường hợp trả 400 |
-| Notebook | 5 notebook đủ output, không cell lỗi |
+| Model native /portable | 38 checkpoint được xác minh |
+| API hợp lệ | 282 yêu cầu thành công |
+| API lỗi | 9 trường hợp trả 400 |
+| Notebook | 6 notebook đủ output, không cell lỗi |
 
 Kiểm thử metric tính lại từ dự đoán đã lưu vàso với JSON của từng model. Checkpoint được nạp lại, đối chiếu cùng input để tránh tình huống báo cáo dùng trọng số khác web. Các split được kiểm tra không giao nhau; dữ liệu chuỗi còn kiểm tra thứ tựthời gian train trước validation trước test.
 
-Cấu hình Render có build commandcài requirements- web.txt, start Gunicorn vàhealthendpointtrả số lượng 18 model. Có file cấu hình không tự đồng nghĩa đã có URLonline. Trạng thái thực tế phải được xác nhận từ dịch vụ bên ngoài, tách biệt với việc API chạy đúng trong test clienthoặcmáy cá nhân.
+Cấu hình Render có build commandcài requirements- web.txt, start Gunicorn vàhealthendpointtrả số lượng 38 checkpoint. Có file cấu hình không tự đồng nghĩa đã có URLonline. Trạng thái thực tế phải được xác nhận từ dịch vụ bên ngoài, tách biệt với việc API chạy đúng trong test clienthoặcmáy cá nhân.
 
 Trạng thái tại lúc xuất báo cáo: đã kiểm tra live tại https://tieuluan-vinh-intellilab.onrender.com
 
@@ -1041,7 +1153,7 @@ Các bước tái lập nằm trong README và docs/DEPLOY.md. Raw data được
 
 Tiểu luận đã kết nối lịch sửAI với ba nhóm mô hình học từ dữ liệu và một ứng dụng phục vụ checkpoint. Phần lịch sử làm rõ vai trò của cách đặt câu hỏi, biểu diễn, dữ liệu và compute. Phần thực nghiệm cho thấy công thức toán học có thể chuyển thành code và được kiểm chứng bằng các phép đối chiếu cụ thể.
 
-Sáu dataset được mô tả theo nguồn, quy mô, cách hình thành mẫu, phân bố và giới hạn. Mười tám implementation được train độc lập từ đầu: MLP, CNN vàVanilla RNN, mỗi loại trên hai dataset bằngscratch/ Keras / PyTorch. Bốn baseline cổ điển bổ sung cho chươngML. Scratchthực hiệnđạo hàm và SGD thật; finite differencescùng hai autogradcung cấp bằng chứng về tính nhất quán của phần cài đặt.
+Sáu dataset được mô tả theo nguồn, quy mô, cách hình thành mẫu, phân bố và giới hạn. Mười tám implementation được train độc lập từ đầu: MLP, CNN vàVanilla RNN, mỗi loại trên hai dataset bằngscratch/ Keras / PyTorch. Bốn mô hình cổ điển bổ sung cho chương ML. Thực nghiệm kiến trúc còn có tám CNN và tám RNN với Adam, cùng split và số epoch; web phục vụ đủ 38 checkpoint. Scratchthực hiệnđạo hàm và SGD thật; finite differencescùng hai autogradcung cấp bằng chứng về tính nhất quán của phần cài đặt.
 
 Kết quả gần nhau giữa framework phù hợp với thiết kế cùngkhởi tạo và cùng phép cập nhật. Điều này không cónghĩa cả ba môi trườngluôn tương đương về hiệu quả tính toán, và cũng khôngchứng minh mô hình đủ tốt trong mọi miền. Baseline, confusion matrixvàví dụ lỗi giúp đặt chất lượng dự đoán trong bối cảnh của từng dataset.
 
@@ -1050,8 +1162,8 @@ Web cho phép thửsáu bài toán bằng model đã train và đầu vào cụ 
 | Chương | Dataset | Sản phẩm chính |
 | --- | --- | --- |
 | ML | CDC, giá nhà | MLP × 3 cài đặt + baseline |
-| CNN | MNIST, EuroSAT | Forward/ backward CNN + metric |
-| RNN | AAPL, khách hàng | BPTT + split thời gian + baseline |
+| CNN | MNIST, EuroSAT | Scratch + bốn kiến trúc so sánh |
+| RNN | AAPL, khách hàng | BPTT + RNN /LSTM/GRU/BiLSTM |
 | Deploy | Sáu bài toán | Flask + trọng số thật + Render YAML |
 
 
@@ -1093,5 +1205,13 @@ Web cho phép thửsáu bài toán bằng model đã train và đầu vào cụ 
 [16] Render. Deploy a Flask App / Blueprint YAML Reference. https://render.com/docs/deploy-flask; https://render.com/docs/blueprint-spec
 
 [17] Nguyễn Minh Vinh. Mã nguồn và kết quả tiểu luận. https://github.com/Vinhdiesel28/tieuluan
+
+[18] K. Simonyan, A. Zisserman. Very Deep Convolutional Networks for Large-Scale Image Recognition. https://arxiv.org/abs/1409.1556
+
+[19] M. Sandler et al. MobileNetV 2: Inverted Residuals and Linear Bottlenecks. https://arxiv.org/abs/1801.04381
+
+[20] K. He et al. Deep Residual Learning for Image Recognition. https://arxiv.org/abs/1512.03385
+
+[21] Phạm Văn Tư. tieuluan 01_CT_02_tupv.pdf. Tham khảo nhóm kiến trúc so sánh; không sao chép dữ liệu hoặc kết quả.
 
 Ngày đối chiếu nguồn: 08/10/2026. Các bảng số liệu và hình thực nghiệm được tạo từ lần chạy trong repository này. Không có mã gốc RNN /ML/ CNN của giảng viên được chỉ định làm bản bắt buộc cho tiểu luận; các đoạn trình bày là code tự triển khai hoặc API thư viện được dẫn nguồn.

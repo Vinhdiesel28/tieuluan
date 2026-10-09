@@ -115,6 +115,10 @@
     {
       "notebook": "05_comparison_deploy.ipynb",
       "cells": 3
+    },
+    {
+      "notebook": "06_architecture_comparison.ipynb",
+      "cells": 31
     }
   ],
   "gradient_checks": [

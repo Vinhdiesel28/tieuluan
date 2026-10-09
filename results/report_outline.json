@@ -152,79 +152,95 @@
     39
   ],
   [
-    "3.12. Tiểu kết CNN và hướng mở rộng",
+    "3.12. So sánh các kiến trúc khác nhau",
     40
   ],
   [
-    "CHƯƠNG 4. RNN - 4.1. Chuỗi và trạng thái",
+    "3.13. Kết quả so sánh kiến trúc trên hai dataset",
     41
   ],
   [
-    "4.2. Vanilla RNN và hợp hàm theo thời gian",
+    "3.14. Tiểu kết CNN và hướng mở rộng",
     42
   ],
   [
-    "4.3. BPTT và kiểm soát gradient",
+    "CHƯƠNG 4. RNN - 4.1. Chuỗi và trạng thái",
     43
   ],
   [
-    "4.4. LSTM, GRU và phạm vi mô hình",
+    "4.2. Vanilla RNN và hợp hàm theo thời gian",
     44
   ],
   [
-    "4.5. Dataset chuỗi: AAPL",
+    "4.3. BPTT và kiểm soát gradient",
     45
   ],
   [
-    "4.6. Dataset chuỗi: Online Retail II",
+    "4.4. LSTM, GRU và phạm vi mô hình",
     46
   ],
   [
-    "4.7. RNN Keras và PyTorch",
+    "4.5. Dataset chuỗi: AAPL",
     47
   ],
   [
-    "4.8. Kết quả RNN: AAPL",
+    "4.6. Dataset chuỗi: Online Retail II",
     48
   ],
   [
-    "4.9. Kết quả RNN: Online Retail II",
+    "4.7. RNN Keras và PyTorch",
     49
   ],
   [
-    "4.10. Learning curve và chi phí RNN",
+    "4.8. Kết quả RNN: AAPL",
     50
   ],
   [
-    "4.11. Phân tích sai số và dịch chuyển thời gian",
+    "4.9. Kết quả RNN: Online Retail II",
     51
   ],
   [
-    "4.12. Tiểu kết RNN",
+    "4.10. Learning curve và chi phí RNN",
     52
   ],
   [
-    "5. TRIỂN KHAI - 5.1. Kiến trúc ứng dụng",
+    "4.11. Phân tích sai số và dịch chuyển thời gian",
     53
   ],
   [
-    "5.2. Hợp đồng đầu vào và giới hạn sử dụng",
+    "4.12. So sánh các kiến trúc khác nhau",
     54
   ],
   [
-    "5.3. Kiểm chứng và trạng thái deploy",
+    "4.13. Kết quả so sánh kiến trúc trên hai dataset",
     55
   ],
   [
-    "KẾT LUẬN",
+    "4.14. Tiểu kết RNN",
     56
   ],
   [
-    "TÀI LIỆU THAM KHẢO",
+    "5. TRIỂN KHAI - 5.1. Kiến trúc ứng dụng",
     57
   ],
   [
-    "Tài liệu tham khảo (tiếp) và tái lập",
+    "5.2. Hợp đồng đầu vào và giới hạn sử dụng",
     58
+  ],
+  [
+    "5.3. Kiểm chứng và trạng thái deploy",
+    59
+  ],
+  [
+    "KẾT LUẬN",
+    60
+  ],
+  [
+    "TÀI LIỆU THAM KHẢO",
+    61
+  ],
+  [
+    "Tài liệu tham khảo (tiếp) và tái lập",
+    62
   ]
 ]

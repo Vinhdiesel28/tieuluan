@@ -5,13 +5,19 @@ from PIL import Image,UnidentifiedImageError
 from flask import Flask,request,jsonify,render_template
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'src'))
 from scratch import forward,probabilities
+from architecture_inference import predict_arch
 from sequence_core import stock_features,STOCK_COLUMNS
 app=Flask(__name__);app.config['MAX_CONTENT_LENGTH']=3*1024*1024
 CAT=json.loads((ROOT/'web/bundle/catalog.json').read_text(encoding='utf-8'))
+ARCH=json.loads((ROOT/'web/bundle/architectures.json').read_text(encoding='utf-8')) if (ROOT/'web/bundle/architectures.json').exists() else {}
 WEIGHTS={}
 for key in CAT:
     for fw in ['scratch','keras','pytorch']:
         z=np.load(ROOT/'web/bundle'/f'{key}_{fw}.npz',allow_pickle=False);WEIGHTS[key,fw]={k:z[k] for k in z.files}
+EXTRA={}
+for key,models in ARCH.items():
+    for name,item in models.items():
+        with np.load(ROOT/'web/bundle'/item['file'],allow_pickle=False) as z:EXTRA[key,name]=dict(z)
 def custom(payload,key,meta):
     context={}
     if meta['kind']=='cnn':
@@ -50,23 +56,35 @@ def custom(payload,key,meta):
 @app.get('/')
 def home():return render_template('index.html')
 @app.get('/health')
-def health():return jsonify(status='ok',models=len(WEIGHTS))
+def health():return jsonify(status='ok',models=len(WEIGHTS)+len(EXTRA))
 @app.get('/api/catalog')
-def catalog():return jsonify({k:dict(selected=v['selected'],kind=v['meta']['kind'],features=v['meta'].get('features',[]),examples=[{a:b for a,b in e.items() if a!='x'} for e in v['examples']]) for k,v in CAT.items()})
+def catalog():
+    result={}
+    for k,v in CAT.items():
+        criterion='RMSE' if v['meta']['task']=='regression' else 'MacroF1'
+        models=ARCH.get(k,{})
+        selected=min(models,key=lambda n:models[n]['validation'][criterion]) if criterion=='RMSE' and models else max(models,key=lambda n:models[n]['validation'][criterion]) if models else 'matched'
+        result[k]=dict(selected=v['selected'],selected_model=selected,kind=v['meta']['kind'],features=v['meta'].get('features',[]),
+            models=[dict(id=n,label=m['label'],framework=m['framework']) for n,m in models.items()]+[dict(id='matched',label={'mlp':'MLP','cnn':'CNN','rnn':'Simple RNN'}[v['meta']['kind']]+' — đối chiếu 3 thư viện',framework=None)],
+            examples=[{a:b for a,b in e.items() if a!='x'} for e in v['examples']])
+    return jsonify(result)
 @app.post('/api/predict')
 def predict():
     try:
         p=request.get_json(silent=True)
         if not isinstance(p,dict):raise ValueError('Gửi JSON object.')
-        key=p.get('dataset');fw=p.get('framework')
-        if not isinstance(key,str) or key not in CAT or fw not in ['scratch','keras','pytorch']:raise ValueError('Dataset/framework không hợp lệ.')
+        key=p.get('dataset');fw=p.get('framework');name=p.get('model','matched')
+        if not isinstance(key,str) or key not in CAT or not isinstance(name,str):raise ValueError('Dataset/model không hợp lệ.')
+        if name=='matched':
+            if fw not in ['scratch','keras','pytorch']:raise ValueError('Framework không hợp lệ.')
+        elif name not in ARCH.get(key,{}) or fw!=ARCH[key][name]['framework']:raise ValueError('Model/framework không hợp lệ.')
         meta=CAT[key]['meta'];context={}
         if 'image' in p or 'csv' in p:x,context=custom(p,key,meta)
         else:
             idx=p.get('example',0)
             if isinstance(idx,bool) or not isinstance(idx,int) or not 0<=idx<len(CAT[key]['examples']):raise ValueError('Mẫu không hợp lệ.')
             e=CAT[key]['examples'][idx];x=np.asarray(e['x'],np.float32);context={a:e[a] for a in ['actual','last_close','date'] if a in e}
-        z=forward(WEIGHTS[key,fw],x[None],meta['kind'])
+        z=forward(WEIGHTS[key,fw],x[None],meta['kind']) if name=='matched' else predict_arch(EXTRA[key,name],ARCH[key][name]['config'],x[None])
         if not np.isfinite(z).all():raise ValueError('Đầu vào vượt miền số học của model.')
         if meta['task']=='classification':
             prob=probabilities(z)[0];label=int(prob.argmax());result=dict(prediction=meta['classes'][label],label=label,probabilities=prob.tolist(),classes=meta['classes'])
@@ -74,7 +92,7 @@ def predict():
             v=float(z[0,0])*meta['y_std']+meta['y_mean']
             if abs(v)>30:raise ValueError('Đầu vào quá khác dữ liệu train.')
             result=dict(prediction=float(context['last_close']*np.exp(v) if key=='stock' else np.expm1(v)),unit='USD' if key=='stock' else 'tỷ VND')
-        return jsonify(dataset=key,framework=fw,**result,**context)
+        return jsonify(dataset=key,framework=fw,model=name,model_label=ARCH[key][name]['label'] if name!='matched' else meta['kind'].upper()+' (đối chiếu thư viện)',**result,**context)
     except (ValueError,TypeError,KeyError,IndexError,UnidentifiedImageError,OverflowError) as e:return jsonify(error=str(e)),400
 @app.errorhandler(413)
 def large(e):return jsonify(error='Yêu cầu quá lớn.'),413

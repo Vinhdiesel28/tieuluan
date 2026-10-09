@@ -7,7 +7,7 @@ Web live: https://tieuluan-vinh-intellilab.onrender.com (Free). Đã kiểm tra 
 3. Đọc `render.yaml`, kiểm tra service `tieuluan-vinh-intellilab`, plan **Free**.
 4. Build: `pip install -r requirements-web.txt`.
 5. Start: `gunicorn --chdir web app:app --bind 0.0.0.0:$PORT --workers 1 --threads 2`.
-6. Khi Live, `/health` phải trả `status: ok, models: 18`. Thử cả sáu bài và ba framework.
+6. Khi Live, `/health` phải trả `status: ok, models: 38`. Thử cả sáu bài, các kiến trúc và nhóm đối chiếu ba framework.
 
 Không cần database hoặc token. Bundle đã có trọng số thật; server không train lại. File docs/deployment_status.json ghi trạng thái live đã xác minh, không suy ra online chỉ vì có YAML.
 

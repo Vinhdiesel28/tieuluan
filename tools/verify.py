@@ -23,7 +23,7 @@ for key in ['diabetes','housing','mnist','eurosat','stock','customer']:
         np.testing.assert_allclose(z,native,atol=2e-5,rtol=2e-5);records.append(dict(dataset=key,framework=fw,max_native_error=float(abs(z-native).max())))
 sys.path.insert(0,str(ROOT/'web'))
 from app import app,CAT
-client=app.test_client();assert client.get('/health').json['models']==18
+client=app.test_client();assert client.get('/health').json['models']==38
 valid=0
 for key,v in CAT.items():
     for fw in ['scratch','keras','pytorch']:

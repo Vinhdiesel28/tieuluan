@@ -1,5 +1,5 @@
 {
-  "pages": 58,
+  "pages": 62,
   "introduction": [
     5,
     8
@@ -14,11 +14,11 @@
   ],
   "cnn": [
     29,
-    40
+    42
   ],
   "rnn": [
-    41,
-    52
+    43,
+    56
   ],
   "all_pages_rendered": true
 }
